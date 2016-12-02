@@ -24,21 +24,31 @@ load.my.packages <- function(){
 
 load.my.packages()
 
+
 ##########################################################################
-# Parámetros que se le requieren al usuario
+# Parámetros
 ##########################################################################
 cat("Introduce el tiempo para el que calcular la posición: ")
 input<-file('stdin', 'r')
-#t <- as.numeric(readLines(input, n=1))
+t <- as.numeric(readLines(input, n=1))
 
-t <- 29
+
+# Leemos los datos de los planetas
+planetas <- read.csv2(file='./planetas_data.csv', header= T)
+
+#t <- 29
 t.ini <- 0
 a <- 1
 epsilon <- 0.017
 period <- 365.26
 tolerance <- 1e-12
-mu <- 4*pi^2/period^2 * a^(3/2)
+mu <- 4*pi^2/period^2 * a^3
 
+
+
+##########################################################################
+# Método de Newton de Raphson
+##########################################################################
 newton.raphson <- function(a, epsilon, period, t, t.ini, tolerance){  
   ji <- 2*pi*(t-t.ini)/period
 
@@ -59,6 +69,9 @@ newton.raphson <- function(a, epsilon, period, t, t.ini, tolerance){
   u
 }
 
+##########################################################################
+# Método de Newton de Bessel
+##########################################################################
 
 bessel.method <- function(a, epsilon, period, t, t.ini, tolerance){
   ji <- 2*pi*(t-t.ini)/period
@@ -90,10 +103,10 @@ posicion.nr <- a*c(cos(result.nr) - epsilon, sqrt(1-epsilon^2)*sin(result.nr))
 # Comprobación de que los resultados con Bessel y Newton Raphson son iguales
 (result.nr - result.bessel) < 1e-10
 
-
-# Parámetros para pintar
+##########################################################################
+#Pintamos gráfica para la Tierra
+##########################################################################
 n.points <- 100
-
 
 # Extraemos n.points equidistantes en el intervalo para pintar
 positions <- lapply(0:n.points, function(x){
@@ -104,21 +117,24 @@ positions <- lapply(0:n.points, function(x){
 
 
 pos.x <- sapply(positions, "[", 1)
-pos.x <- sapply(pos.x, asNumeric)
 pos.y <- sapply(positions, "[", 2)
-pos.y <- sapply(pos.y, asNumeric)
 plot(pos.x, pos.y)
+
+
+##########################################################################
+# Devolvemos los resultados para la Tierra
+##########################################################################
+cat("Devolviendo resultados para la Tierra:\n")
 
 u.diff <- 2*pi/(period*(1-epsilon * cos(result.nr)))
 velocidad <- a*c(-sin(result.nr) * u.diff, sqrt(1-epsilon^2) * cos(result.nr) * u.diff)
 momento.angular = as.vector(cross( c(posicion.nr, 0), c(velocidad, 0) ))
 
-                            
-# Devolvemos la posición
 list(posicion = posicion.nr,
      distancia.Sol = sqrt(sum(posicion.nr^2)),
      velocidad = velocidad,
      momento.angular = momento.angular,
      area = 1/2 * sqrt(sum(momento.angular^2)) * (t-t.ini),
-     energia = sqrt( sum(posicion.nr^2) )/2 - mu/sqrt( sum(posicion.nr^2) )  )
+     energia.calculada = sum(velocidad^2)/2 - mu/sqrt( sum(posicion.nr^2) ),
+     energia.teorica = -mu/(2*a))
  
