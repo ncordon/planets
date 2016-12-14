@@ -1,5 +1,5 @@
 shinyUI(fluidPage(
-  titlePanel(h1(strong("Órbitas del Sistema Solar"))),
+  titlePanel("Órbitas del Sistema Solar") ,
 
   sidebarLayout(#position = "right",
     sidebarPanel(
@@ -36,9 +36,10 @@ shinyUI(fluidPage(
                                                     "Neptuno"=8),
 
                                      selected = 1:8)),
-        column(3, numericInput("tiempo-input", label="Introduce tiempo en días", value=0))),
+        column(3, numericInput("input-tiempo", label="Introduce tiempo en días", value=0))),
       br(),
-      img(src = "plot.png")
+#      plotOutput("graph"),
+      textOutput("text1")
     ))
 ))
 
