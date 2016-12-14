@@ -24,13 +24,17 @@ load.my.packages <- function(){
 
 load.my.packages()
 
+##########################################################################
+# Carga de algoritmos
+##########################################################################
+source(file = "algorithm.R")
 
 ##########################################################################
-# Parámetros
+# Lectura de datos
 ##########################################################################
 cat("Introduce el tiempo para el que calcular la posición: ")
-input<-file('stdin', 'r')
-t <- as.numeric(readLines(input, n=1))
+#input<-file('stdin', 'r')
+#t <- as.numeric(readLines(input, n=1))
 
 
 # Leemos los datos de los planetas
@@ -46,53 +50,6 @@ mu <- 4*pi^2/period^2 * a^3
 
 
 
-##########################################################################
-# Método de Newton de Raphson
-##########################################################################
-newton.raphson <- function(a, epsilon, period, t, t.ini, tolerance){  
-  ji <- 2*pi*(t-t.ini)/period
-
-  phi <- function(u){
-    (epsilon*(sin(u)-u*cos(u))+ji)/(1-epsilon*cos(u))
-
-  }
-
-  # Tomamos u_0 = pi
-  u <- pi
-  phi.u <- phi(u)
-  
-  while(abs(phi.u - u) > tolerance){
-    u <- phi.u
-    phi.u <- phi(u)
-  }
-  
-  u
-}
-
-##########################################################################
-# Método de Newton de Bessel
-##########################################################################
-
-bessel.method <- function(a, epsilon, period, t, t.ini, tolerance){
-  ji <- 2*pi*(t-t.ini)/period
-
-  series.term <- function(n){
-    2/n*besselJ(n*epsilon, n)*sin(n*ji)
-  }
-  
-  u <- ji + series.term(1)
-  bessel.u <- u + series.term(2)
-  n <- 3
-  
-  while(abs(bessel.u - u) > tolerance){
-    u <- bessel.u
-    bessel.u <- bessel.u + series.term(n)
-    n <- n+1
-  } 
-
-  bessel.u
-}
-
 
 # Obtenemos la posición para la entrada requerida
 result.nr <- newton.raphson(a, epsilon, period, t, t.ini, tolerance)
@@ -102,6 +59,8 @@ posicion.nr <- a*c(cos(result.nr) - epsilon, sqrt(1-epsilon^2)*sin(result.nr))
 
 # Comprobación de que los resultados con Bessel y Newton Raphson son iguales
 (result.nr - result.bessel) < 1e-10
+
+
 
 ##########################################################################
 #Pintamos gráfica para la Tierra
