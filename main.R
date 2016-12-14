@@ -75,3 +75,5 @@ ggplot(data = orbitas, aes(x=abscisas, y=ordenadas, col=name)) +
   scale_color_brewer(palette="Paired") +
   labs(col = "Planetas")
  
+
+planetas.datos
