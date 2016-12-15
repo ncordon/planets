@@ -16,11 +16,10 @@ library('shiny')
 shinyUI(fluidPage(
   titlePanel("Órbitas del Sistema Solar") ,
 
-  sidebarLayout(#position = "right",
+  sidebarLayout(position = "left",
     sidebarPanel(
-      h3(strong("Mecánica Celeste")),
-      h4(em("Introduce un tiempo inicial para el que conocer las características orbitales \
-         de los distintos planetas del Sistema Solar en dicho instante de tiempo")),
+      h4("Introduce un tiempo inicial para el que conocer las características orbitales \
+         de los distintos planetas del Sistema Solar en dicho instante de tiempo..."),
       checkboxGroupInput("planetselect", 
                          label = h3("Planetas a dibujar"), 
                          choices = list("Mercurio"="Mercurio",

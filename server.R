@@ -71,7 +71,7 @@ function(input, output){
     results <- data.frame(do.call(rbind, results))
     colnames(results) <- c("Planeta", "Posición Newton-Raphson", "Posición Bessel",
                            "Distancia Sol", "Vector velocidad", "Momento angular",
-                           "Área", "Energía calculada", "Energía teórica")
+                           "Área barrida", "Energía calculada", "Energía teórica")
  
     results
   })
@@ -101,8 +101,11 @@ function(input, output){
       xlab("x") + ylab("y") +
       scale_color_brewer(palette="Paired") +
       labs(col = "Planetas") +
-      geom_point(data = current, size=2, aes(x=abscisas, y=ordenadas), col="black")
-
+      geom_point(data = current, size=2, aes(x=abscisas, y=ordenadas), col="black") +
+      theme(legend.text = element_text(size=14),
+            legend.title = element_text(size=14),
+            axis.text = element_text(size=14),
+            axis.title = element_text(size=14))            
     graph
   })
 }
