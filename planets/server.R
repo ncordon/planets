@@ -53,6 +53,7 @@ source(file="helpers.R", local=T)
 function(input, output){ 
   output$table <- renderTable({
     t <- as.numeric(input$timeselect)
+    req(t)
     selected <- input$planetselect
     validate( need( length(selected) > 0, "Selecciona algún planeta") )
 
@@ -78,7 +79,7 @@ function(input, output){
   output$graph <- renderPlot({
     #Leemos el tiempo solicitándoselo al usuario
     t <- as.numeric(input$timeselect)
-    # validate( need( t < 0, "Introduzca tiempo mayor que 0") )
+    req(t)
     selected <- input$planetselect
     validate( need( length(selected) > 0, "Selecciona algún planeta") )
 
