@@ -35,7 +35,12 @@ shinyUI(fluidPage(
       numericInput("timeselect", label="Introduce tiempo en días", value=0) ),
     
     mainPanel(
-      tags$div(plotOutput("graph", width="100%", height="100%"), style="height: 40em; width: 70em"),
+      fluidRow(
+        column(2),
+        column(8, plotOutput("graph", width="100%", height="100%"),
+               style="height: 40em; width: 60em"),
+        column(2)
+      ),
       #plotOutput("graph"),
       tableOutput("table")
     ))

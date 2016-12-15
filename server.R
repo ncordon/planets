@@ -51,15 +51,30 @@ source(file="helpers.R", local=T)
 # Resultados
 ##########################################################################    
 function(input, output){ 
-  output$table <- renderTable({
-    t <- as.numeric(input$timeselect)
-    req(t)
+  sel.planets <- reactive({
     selected <- input$planetselect
     validate( need( length(selected) > 0, "Selecciona algún planeta") )
-
-    make.format <- function(...){ paste(sapply(..., format, digits=4), collapse=", ") }
     sel.planets <- planetas[ planetas$name %in% selected, ]
-    planet.data <- lapply(1:nrow(sel.planets), function(i){ planet.info( sel.planets[i,], t ) })
+    planet.data <- lapply(1:nrow(sel.planets), function(i){
+      planet.info( sel.planets[i,], sel.time() )
+    })
+    
+    planet.data
+  })
+
+  
+  sel.time <- reactive({
+    t <- as.numeric(input$timeselect)
+    req(t)
+
+    t
+  })
+
+
+  output$table <- renderTable({
+    planet.data <- sel.planets()
+    
+    make.format <- function(...){ paste(sapply(..., format, digits=4), collapse=", ") }
 
     results <- lapply(planet.data, function(p){
       lapply(list(p$name, p$posicion.nr, p$posicion.bessel,
@@ -77,14 +92,7 @@ function(input, output){
   })
 
   output$graph <- renderPlot({
-    #Leemos el tiempo solicitándoselo al usuario
-    t <- as.numeric(input$timeselect)
-    req(t)
-    selected <- input$planetselect
-    validate( need( length(selected) > 0, "Selecciona algún planeta") )
-
-    sel.planets <- planetas[ planetas$name %in% selected, ]
-    planet.data <- lapply(1:nrow(sel.planets), function(i){ planet.info( sel.planets[i,], t ) })
+    planet.data <- sel.planets()
 
     orbits <- lapply(planet.data, function(p){
       data.frame(name = p$name, ordenadas = p$ordenadas, abscisas = p$abscisas)
