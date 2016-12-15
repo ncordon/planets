@@ -50,7 +50,8 @@ source(file="helpers.R", local=T)
 ##########################################################################
 # Resultados
 ##########################################################################    
-function(input, output){ 
+function(input, output){
+  # Planetas seleccionados
   sel.planets <- reactive({
     selected <- input$planetselect
     validate( need( length(selected) > 0, "Selecciona algún planeta") )
@@ -62,15 +63,39 @@ function(input, output){
     planet.data
   })
 
-  
+  # Tiempo seleccionado
   sel.time <- reactive({
     t <- as.numeric(input$timeselect)
+    # Si t no tiene un valor válido, se interrumpe la ejecuciób
     req(t)
 
     t
   })
 
 
+  graph.axis <- reactiveValues(x = NULL, y = NULL)
+
+
+  # Vigila el evento brush y el double click
+  #   Si se recuadra un área y se hace doble click, se aumenta
+  #   Hacer doble click sin recuadrar hace que el gráfico se regenere
+  #
+  # http://shiny.rstudio.com/gallery/plot-interaction-zoom.html
+  observeEvent(input$doubleclick, {
+    brush <- input$brush
+    
+    if (!is.null(brush)) {
+      graph.axis$x <- c(brush$xmin, brush$xmax)
+      graph.axis$y <- c(brush$ymin, brush$ymax)
+
+    } else {
+      graph.axis$x <- NULL
+      graph.axis$y <- NULL
+    }
+  })
+
+  
+  # Tabla de resultados
   output$table <- renderTable({
     planet.data <- sel.planets()
     
@@ -84,13 +109,14 @@ function(input, output){
     })
 
     results <- data.frame(do.call(rbind, results))
-    colnames(results) <- c("Planeta", "Posición Newton-Raphson", "Posición Bessel",
-                           "Distancia Sol", "Vector velocidad", "Momento angular",
+    colnames(results) <- c("Planeta", "x(t) Newton-Raphson", "x(t) Bessel",
+                           "Distancia Sol", "x'(t)", "Momento angular",
                            "Área barrida", "Energía calculada", "Energía teórica")
  
     results
   })
-
+  
+  # Gráfico de resultados
   output$graph <- renderPlot({
     planet.data <- sel.planets()
 
@@ -105,15 +131,16 @@ function(input, output){
     current <- data.frame(do.call(rbind, current), point.size=3)
 
     graph <- ggplot()  +
-      geom_path(data = orbits, size=1, aes(x=abscisas, y=ordenadas, col=name)) +
+      geom_path(data = orbits, size=2, aes(x=abscisas, y=ordenadas, col=name)) +
       xlab("x") + ylab("y") +
       scale_color_brewer(palette="Paired") +
       labs(col = "Planetas") +
-      geom_point(data = current, size=2, aes(x=abscisas, y=ordenadas), col="black") +
+      geom_point(data = current, size=4, aes(x=abscisas, y=ordenadas), col="black") +
+      coord_cartesian(xlim = graph.axis$x, ylim = graph.axis$y) +
       theme(legend.text = element_text(size=14),
             legend.title = element_text(size=14),
             axis.text = element_text(size=14),
             axis.title = element_text(size=14))            
     graph
-  })
+  })  
 }

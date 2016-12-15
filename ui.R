@@ -32,12 +32,17 @@ shinyUI(fluidPage(
                                         "Neptuno"="Neptuno"),
                          selected = c("Mercurio", "Venus", "Tierra", "Marte",
                                       "Júpiter", "Saturno", "Urano", "Neptuno")),
-      numericInput("timeselect", label="Introduce tiempo en días", value=0) ),
+      numericInput("timeselect", label="Introduce tiempo en días (t)", value=0) ),
     
     mainPanel(
       fluidRow(
         column(2),
-        column(8, plotOutput("graph", width="100%", height="100%"),
+        column(8, plotOutput("graph", width="100%", height="100%",
+                             dblclick = "doubleclick",
+                             brush = brushOpts(
+                               id = "brush",
+                               resetOnNew = TRUE
+                             )),
                style="height: 40em; width: 60em"),
         column(2)
       ),
