@@ -20,6 +20,7 @@ library('Bessel')
 library('pracma')
 library('ggplot2')
 library('shiny')
+library('data.table')
 #pkgs <- c('Bessel', 'pracma', 'ggplot2', 'shiny')
 #sapply(pkgs, require, character.only=TRUE)
 
@@ -50,9 +51,29 @@ source(file="helpers.R", local=T)
 # Resultados
 ##########################################################################    
 function(input, output){ 
-  ## output$text1 <- renderText({
-  ##   input$planetselect
-  ## })
+  output$table <- renderTable({
+    t <- as.numeric(input$timeselect)
+    selected <- input$planetselect
+    validate( need( length(selected) > 0, "Selecciona algún planeta") )
+
+    make.format <- function(...){ paste(sapply(..., format, digits=4), collapse=", ") }
+    sel.planets <- planetas[ planetas$name %in% selected, ]
+    planet.data <- lapply(1:nrow(sel.planets), function(i){ planet.info( sel.planets[i,], t ) })
+
+    results <- lapply(planet.data, function(p){
+      lapply(list(p$name, p$posicion.nr, p$posicion.bessel,
+                 p$distancia.sol, p$velocidad, p$momento.angular,
+                 p$area, p$energia.calculada, p$energia.teorica),
+             make.format)
+    })
+
+    results <- data.frame(do.call(rbind, results))
+    colnames(results) <- c("Planeta", "Posición Newton-Raphson", "Posición Bessel",
+                           "Distancia Sol", "Vector velocidad", "Momento angular",
+                           "Área", "Energía calculada", "Energía teórica")
+ 
+    results
+  })
 
   output$graph <- renderPlot({
     #Leemos el tiempo solicitándoselo al usuario
