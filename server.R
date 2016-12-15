@@ -4,7 +4,7 @@ rm(list = ls())
 options(digits=22)
 # Tolerancia para los algoritmos
 tolerance <- 1e-12
-# Número de puntos a graficar para cada planeta
+# Precisión con la que graficar la órbita de cada planeta
 n.points <- 100
 
 
@@ -20,10 +20,6 @@ library('Bessel')
 library('pracma')
 library('ggplot2')
 library('shiny')
-library('data.table')
-#pkgs <- c('Bessel', 'pracma', 'ggplot2', 'shiny')
-#sapply(pkgs, require, character.only=TRUE)
-
 
 ##########################################################################
 # Lectura de datos
@@ -50,16 +46,61 @@ source(file="helpers.R", local=T)
 ##########################################################################
 # Resultados
 ##########################################################################    
-function(input, output){ 
-  output$table <- renderTable({
-    t <- as.numeric(input$timeselect)
-    req(t)
+function(input, output){
+  # Planetas seleccionados
+  sel.planets <- reactive({
     selected <- input$planetselect
-    validate( need( length(selected) > 0, "Selecciona algún planeta") )
-
-    make.format <- function(...){ paste(sapply(..., format, digits=4), collapse=", ") }
+    # Comprueba que la entrada es no vacía
+    req(selected)
     sel.planets <- planetas[ planetas$name %in% selected, ]
-    planet.data <- lapply(1:nrow(sel.planets), function(i){ planet.info( sel.planets[i,], t ) })
+    planet.data <- lapply(1:nrow(sel.planets), function(i){
+      planet.info( sel.planets[i,], sel.time() )
+    })
+    
+    planet.data
+  })
+
+
+
+  # Tiempo seleccionado
+  sel.time <- reactive({
+    t <- as.numeric(input$timeselect)
+    # Si t no tiene un valor válido, se interrumpe la ejecuciób
+    req(t)
+
+    t
+  })
+
+
+  graph.axis <- reactiveValues(x = NULL, y = NULL)
+
+
+  # Vigila el evento brush y el double click
+  #   Si se recuadra un área y se hace doble click, se aumenta
+  #   Hacer doble click sin recuadrar hace que el gráfico se regenere
+  #
+  # http://shiny.rstudio.com/gallery/plot-interaction-zoom.html
+  observeEvent(input$doubleclick, {
+    brush <- input$brush
+    
+    if (!is.null(brush)) {
+      graph.axis$x <- c(brush$xmin, brush$xmax)
+      graph.axis$y <- c(brush$ymin, brush$ymax)
+
+    } else {
+      graph.axis$x <- NULL
+      graph.axis$y <- NULL
+    }
+  })
+
+  
+  # Tabla de resultados
+  output$table <- renderTable({
+    planet.data <- sel.planets()
+    
+    make.format <- function(...){
+      paste( format(unlist(...), digits=4), collapse=", ")
+    }
 
     results <- lapply(planet.data, function(p){
       lapply(list(p$name, p$posicion.nr, p$posicion.bessel,
@@ -69,22 +110,16 @@ function(input, output){
     })
 
     results <- data.frame(do.call(rbind, results))
-    colnames(results) <- c("Planeta", "Posición Newton-Raphson", "Posición Bessel",
-                           "Distancia Sol", "Vector velocidad", "Momento angular",
+    colnames(results) <- c("Planeta", "x(t) Newton-Raphson", "x(t) Bessel",
+                           "Distancia Sol", "x'(t)", "Momento angular",
                            "Área barrida", "Energía calculada", "Energía teórica")
  
     results
   })
-
+  
+  # Gráfico de resultados
   output$graph <- renderPlot({
-    #Leemos el tiempo solicitándoselo al usuario
-    t <- as.numeric(input$timeselect)
-    req(t)
-    selected <- input$planetselect
-    validate( need( length(selected) > 0, "Selecciona algún planeta") )
-
-    sel.planets <- planetas[ planetas$name %in% selected, ]
-    planet.data <- lapply(1:nrow(sel.planets), function(i){ planet.info( sel.planets[i,], t ) })
+    planet.data <- sel.planets()
 
     orbits <- lapply(planet.data, function(p){
       data.frame(name = p$name, ordenadas = p$ordenadas, abscisas = p$abscisas)
@@ -95,17 +130,29 @@ function(input, output){
 
     orbits <- data.frame(do.call(rbind, orbits), point.size=1)
     current <- data.frame(do.call(rbind, current), point.size=3)
+    sun <- data.frame(abscisas=0, ordenadas=0)
 
-    graph <- ggplot()  +
-      geom_path(data = orbits, size=1, aes(x=abscisas, y=ordenadas, col=name)) +
-      xlab("x") + ylab("y") +
+
+    
+    # Dibuja gráfico con planetas
+    graph <- ggplot()
+    
+    if(input$sunselect){
+      graph <- graph + geom_point(data = sun, size=6, aes(x=abscisas, y=ordenadas), col="gold1") 
+    }
+    
+    graph <- graph + 
+      geom_path(data = orbits, size=2, aes(x=abscisas, y=ordenadas, col=name)) +
+      scale_x_continuous(name = "x", labels = function(x){ as.character(round(x,4)) }) +
+      scale_y_continuous(name = "y", labels = function(y){ as.character(round(y,4)) }) +
       scale_color_brewer(palette="Paired") +
-      labs(col = "Planetas") +
-      geom_point(data = current, size=2, aes(x=abscisas, y=ordenadas), col="black") +
+      geom_point(data = current, size=4, aes(x=abscisas, y=ordenadas), col="black") +
+      coord_cartesian(xlim = graph.axis$x, ylim = graph.axis$y) +
       theme(legend.text = element_text(size=14),
-            legend.title = element_text(size=14),
+            legend.title = element_blank(),
             axis.text = element_text(size=14),
-            axis.title = element_text(size=14))            
+            axis.title = element_text(size=14))
+    
     graph
-  })
+  })  
 }
