@@ -16,19 +16,12 @@ n.points <- 100
 ### pracma -> producto vectorial
 ### ggplot2 -> paquete para gráficas
 ### shiny -> render web
-pkgs <- c('Bessel', 'pracma', 'ggplot2', 'shiny')
-
-load.my.packages <- function(){
-  to.install <- pkgs[ ! pkgs %in% installed.packages()[,1] ]
-
-  if ( length(to.install) > 0 ){
-    install.packages( to.install, dependencies = TRUE )
-  }
-  
-  sapply(pkgs, require, character.only=TRUE)
-}
-
-load.my.packages()
+library('Bessel')
+library('pracma')
+library('ggplot2')
+library('shiny')
+#pkgs <- c('Bessel', 'pracma', 'ggplot2', 'shiny')
+#sapply(pkgs, require, character.only=TRUE)
 
 
 ##########################################################################
@@ -48,34 +41,41 @@ planetas <- data.frame(
 ##########################################################################
 
 # Newton-Raphson y Bessel
-source(file = "./algorithm.R")
+source(file = "./algorithm.R", local=T)
 # Cálculo de características de planeta(órbita, energía, momento angular,...)
 source(file="helpers.R", local=T)
 
 
+##########################################################################
+# Resultados
+##########################################################################    
 function(input, output){ 
+  ## output$text1 <- renderText({
+  ##   input$planetselect
+  ## })
+
   output$graph <- renderPlot({
     #Leemos el tiempo solicitándoselo al usuario
     t <- as.numeric(input$timeselect)
-    validate(need(t>0, "Introduzca tiempo mayor que 0"))
+    # validate( need( t < 0, "Introduzca tiempo mayor que 0") )
+    selected <- input$planetselect
+    validate( need( length(selected) > 0, "Selecciona algún planeta") )
 
-    ##########################################################################
-    # Resultados
-    ##########################################################################    
-    planetas.datos <- lapply(1:nrow(planetas), function(i){ planet.info( planetas[i,], t ) })
+    sel.planets <- planetas[ planetas$name %in% selected, ]
+    planet.data <- lapply(1:nrow(sel.planets), function(i){ planet.info( sel.planets[i,], t ) })
 
-    orbitas <- lapply(planetas.datos, function(p){
+    orbits <- lapply(planet.data, function(p){
       data.frame(name = p$name, ordenadas = p$ordenadas, abscisas = p$abscisas)
     })
-    current <- lapply(planetas.datos, function(p){
-      data.frame(name = "Posicion(t)", abscisas = p$posicion.nr[1], ordenadas = p$posicion.nr[2])
+    current <- lapply(planet.data, function(p){
+      data.frame(abscisas = p$posicion.nr[1], ordenadas = p$posicion.nr[2])
     })
 
-    orbitas <- data.frame(do.call(rbind, orbitas), point.size=1)
+    orbits <- data.frame(do.call(rbind, orbits), point.size=1)
     current <- data.frame(do.call(rbind, current), point.size=3)
 
     graph <- ggplot()  +
-      geom_path(data = orbitas, size=1, aes(x=abscisas, y=ordenadas, col=name)) +
+      geom_path(data = orbits, size=1, aes(x=abscisas, y=ordenadas, col=name)) +
       xlab("x") + ylab("y") +
       scale_color_brewer(palette="Paired") +
       labs(col = "Planetas") +

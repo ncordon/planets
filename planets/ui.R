@@ -6,21 +6,12 @@
 ### pracma -> producto vectorial
 ### ggplot2 -> paquete para gráficas
 ### shiny -> render web
-pkgs <- c('Bessel', 'pracma', 'ggplot2', 'shiny')
-
-load.my.packages <- function(){
-  to.install <- pkgs[ ! pkgs %in% installed.packages()[,1] ]
-
-  if ( length(to.install) > 0 ){
-    install.packages( to.install, dependencies = TRUE )
-  }
-  
-  sapply(pkgs, require, character.only=TRUE)
-}
-
-load.my.packages()
-
-
+library('Bessel')
+library('pracma')
+library('ggplot2')
+library('shiny')
+#pkgs <- c('Bessel', 'pracma', 'ggplot2', 'shiny')
+#sapply(pkgs, require, character.only=TRUE)
 
 shinyUI(fluidPage(
   titlePanel("Órbitas del Sistema Solar") ,
@@ -34,16 +25,16 @@ shinyUI(fluidPage(
       fluidRow(
         column(3, checkboxGroupInput("planetselect", 
                                      label = h3("Planetas a dibujar"), 
-                                     choices = list("Mercurio"=1,
-                                                    "Venus"=2,
-                                                    "Tierra"=3,
-                                                    "Marte"=4,
-                                                    "Júpiter"=5,
-                                                    "Saturno"=6,
-                                                    "Urano"=7,
-                                                    "Neptuno"=8),
-
-                                     selected = 1:8)),
+                                     choices = list("Mercurio"="Mercurio",
+                                                    "Venus"="Venus",
+                                                    "Tierra"="Tierra",
+                                                    "Marte"="Marte",
+                                                    "Júpiter"="Júpiter",
+                                                    "Saturno"="Saturno",
+                                                    "Urano"="Urano",
+                                                    "Neptuno"="Neptuno"),
+                                     selected = c("Mercurio", "Venus", "Tierra", "Marte",
+                                                  "Júpiter", "Saturno", "Urano", "Neptuno"))),
         column(3, numericInput("timeselect", label="Introduce tiempo en días", value=0))),
       br(),
       plotOutput("graph"),
