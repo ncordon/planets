@@ -63,6 +63,7 @@ function(input, output){
     planet.data
   })
 
+
   # Tiempo seleccionado
   sel.time <- reactive({
     t <- as.numeric(input$timeselect)
@@ -99,7 +100,9 @@ function(input, output){
   output$table <- renderTable({
     planet.data <- sel.planets()
     
-    make.format <- function(...){ paste(sapply(..., format, digits=4), collapse=", ") }
+    make.format <- function(...){
+      paste( format(unlist(...), digits=4), collapse=", ")
+    }
 
     results <- lapply(planet.data, function(p){
       lapply(list(p$name, p$posicion.nr, p$posicion.bessel,
@@ -129,16 +132,18 @@ function(input, output){
 
     orbits <- data.frame(do.call(rbind, orbits), point.size=1)
     current <- data.frame(do.call(rbind, current), point.size=3)
-
+    sun <- data.frame(abscisas=0, ordenadas=0)
+    
     graph <- ggplot()  +
       geom_path(data = orbits, size=2, aes(x=abscisas, y=ordenadas, col=name)) +
-      xlab("x") + ylab("y") +
+      scale_x_continuous(name = "x", labels = function(x){ as.character(round(x,4)) }) +
+      scale_y_continuous(name = "y", labels = function(y){ as.character(round(y,4)) }) +
       scale_color_brewer(palette="Paired") +
-      labs(col = "Planetas") +
       geom_point(data = current, size=4, aes(x=abscisas, y=ordenadas), col="black") +
+      geom_point(data = sun, size=6, aes(x=abscisas, y=ordenadas), col="orange") +
       coord_cartesian(xlim = graph.axis$x, ylim = graph.axis$y) +
       theme(legend.text = element_text(size=14),
-            legend.title = element_text(size=14),
+            legend.title = element_blank(),
             axis.text = element_text(size=14),
             axis.title = element_text(size=14))            
     graph
