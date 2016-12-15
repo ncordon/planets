@@ -31,28 +31,26 @@ load.my.packages <- function(){
 
 load.my.packages()
 
-##########################################################################
-# Carga de archivos auxiliares
-##########################################################################
-
-# Newton-Raphson y Bessel
-source(file = "algorithm.R")
-# Cálculo de características de planeta(órbita, energía, momento angular,...)
-source(file = "planets.R")
 
 ##########################################################################
 # Lectura de datos
 ##########################################################################
 
 # Leemos los datos de los planetas
-planetas <- read.csv(file='./planetas_data.csv', header= T, stringsAsFactors = F)
+planetas <- read.csv(file='../planetas_data.csv', header= T, stringsAsFactors = F)
 
-# Leemos el tiempo solicitándoselo al usuario
-cat("Introduce el tiempo para el que calcular la posición: ")
-#input<-file('stdin', 'r')
-#t <- as.numeric(readLines(input, n=1))
-t <- 29
+#Leemos el tiempo solicitándoselo al usuario
+t <- input$timeselect
 t.ini <- 0
+
+##########################################################################
+# Carga de archivos auxiliares
+##########################################################################
+
+# Newton-Raphson y Bessel
+source(file = "../algorithm.R", local=T)
+# Cálculo de características de planeta(órbita, energía, momento angular,...)
+source(file = "../planets.R", local=T)
 
 
 ##########################################################################
@@ -68,12 +66,12 @@ orbitas <- lapply(planetas.datos, function(p){
 orbitas <- do.call(rbind, orbitas)
 
 
-ggplot(data = orbitas, aes(x=abscisas, y=ordenadas, col=name)) +
+graph <- ggplot(data = orbitas, aes(x=abscisas, y=ordenadas, col=name)) +
   geom_point(size=1) +
   xlab("x") + ylab("y") +
   ggtitle("Órbitas de planetas") +
   scale_color_brewer(palette="Paired") +
   labs(col = "Planetas")
- 
 
-planetas.datos
+graph
+#planetas.datos

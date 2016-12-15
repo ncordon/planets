@@ -3,13 +3,15 @@
 #     Posición, distancia al sol, momento angular, area de órbita, energía
 ##########################################################################
 
-planet.info <- function(planet){
-  name <- planet$nombre
+planet.info <- function(planet, t){
+  name <- planet$name
   a <- planet$a
   epsilon <- planet$epsilon
-  period <- planet$periodo
+  period <- planet$period
   mu <- 4*pi^2/period^2 * a^3
-
+  t.ini <- 0
+  
+  
   # Aproximamos una solución de la ecuación implícita, tanto por Newton-Raphson, como por Bessel
   posicion <- function(u){
     a*c(cos(u) - epsilon, sqrt(1-epsilon^2)*sin(u))
@@ -24,7 +26,7 @@ planet.info <- function(planet){
   positions <- lapply(0:n.points, function(x){
     t <- t.ini + x*(period - t.ini)/n.points
     u <- newton.raphson(a, epsilon, period, t, t.ini, tolerance)
-    c(a*c(cos(u) - epsilon, sqrt(1-epsilon^2)*sin(u)))
+    posicion(u)
   })
 
 
