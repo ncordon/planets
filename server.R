@@ -4,7 +4,7 @@ rm(list = ls())
 options(digits=22)
 # Tolerancia para los algoritmos
 tolerance <- 1e-12
-# Número de puntos a graficar para cada planeta
+# Precisión con la que graficar la órbita de cada planeta
 n.points <- 100
 
 
@@ -20,10 +20,6 @@ library('Bessel')
 library('pracma')
 library('ggplot2')
 library('shiny')
-library('data.table')
-#pkgs <- c('Bessel', 'pracma', 'ggplot2', 'shiny')
-#sapply(pkgs, require, character.only=TRUE)
-
 
 ##########################################################################
 # Lectura de datos
@@ -54,7 +50,8 @@ function(input, output){
   # Planetas seleccionados
   sel.planets <- reactive({
     selected <- input$planetselect
-    validate( need( length(selected) > 0, "Selecciona algún planeta") )
+    # Comprueba que la entrada es no vacía
+    req(selected)
     sel.planets <- planetas[ planetas$name %in% selected, ]
     planet.data <- lapply(1:nrow(sel.planets), function(i){
       planet.info( sel.planets[i,], sel.time() )
@@ -62,6 +59,7 @@ function(input, output){
     
     planet.data
   })
+
 
 
   # Tiempo seleccionado
@@ -133,19 +131,28 @@ function(input, output){
     orbits <- data.frame(do.call(rbind, orbits), point.size=1)
     current <- data.frame(do.call(rbind, current), point.size=3)
     sun <- data.frame(abscisas=0, ordenadas=0)
+
+
     
-    graph <- ggplot()  +
+    # Dibuja gráfico con planetas
+    graph <- ggplot()
+    
+    if(input$sunselect){
+      graph <- graph + geom_point(data = sun, size=6, aes(x=abscisas, y=ordenadas), col="gold1") 
+    }
+    
+    graph <- graph + 
       geom_path(data = orbits, size=2, aes(x=abscisas, y=ordenadas, col=name)) +
       scale_x_continuous(name = "x", labels = function(x){ as.character(round(x,4)) }) +
       scale_y_continuous(name = "y", labels = function(y){ as.character(round(y,4)) }) +
       scale_color_brewer(palette="Paired") +
       geom_point(data = current, size=4, aes(x=abscisas, y=ordenadas), col="black") +
-      geom_point(data = sun, size=6, aes(x=abscisas, y=ordenadas), col="orange") +
       coord_cartesian(xlim = graph.axis$x, ylim = graph.axis$y) +
       theme(legend.text = element_text(size=14),
             legend.title = element_blank(),
             axis.text = element_text(size=14),
-            axis.title = element_text(size=14))            
+            axis.title = element_text(size=14))
+    
     graph
   })  
 }

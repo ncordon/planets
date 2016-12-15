@@ -10,8 +10,7 @@ library('Bessel')
 library('pracma')
 library('ggplot2')
 library('shiny')
-#pkgs <- c('Bessel', 'pracma', 'ggplot2', 'shiny')
-#sapply(pkgs, require, character.only=TRUE)
+
 
 shinyUI(fluidPage(
   titlePanel("Órbitas del Sistema Solar") ,
@@ -32,23 +31,23 @@ shinyUI(fluidPage(
                                         "Neptuno"="Neptuno"),
                          selected = c("Mercurio", "Venus", "Tierra", "Marte",
                                       "Júpiter", "Saturno", "Urano", "Neptuno")),
+      checkboxInput("sunselect", label = "Sol", value = TRUE),
       numericInput("timeselect", label="Introduce tiempo en días (t)", value=0) ),
     
     mainPanel(
       fluidRow(
-        column(2),
         column(8, plotOutput("graph", width="100%", height="100%",
                              dblclick = "doubleclick",
                              brush = brushOpts(
                                id = "brush",
                                resetOnNew = TRUE
                              )),
-               style="height: 40em; width: 60em"),
-        column(2)
-      ),
-      #plotOutput("graph"),
-      tableOutput("table")
-    ))
+               style="height: 35em; width: 55em"),
+        column(4)
+      ))),
+  fluidRow(
+    column(8, tableOutput("table"))
+  )
 ))
 
 
