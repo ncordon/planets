@@ -16,6 +16,7 @@ n.points <- 100
 ### pracma -> producto vectorial
 ### ggplot2 -> paquete para gráficas
 ### shiny -> render web
+### plotly -> paquete para gráficas 3D
 library('Bessel')
 library('pracma')
 library('ggplot2')
@@ -122,17 +123,28 @@ function(input, output){
 
     datos <- rbind(orbits, current)
 
+    
     # Dibuja gráfico con planetas
-    plot_ly() %>% 
-    add_trace(data = datos,
-            x = ~ordenadas,
-            y = ~abscisas,
-            z = ~alturas,
-            type = 'scatter3d',
-            mode = 'markers',
-            color = ~name,
-            size = ~point.size,
-            marker = list(sizeref = 0.5))
+    plot_ly() %>%
+      
+      add_trace(
+        data = rbind(orbits, current),
+        x = ~ordenadas,
+        y = ~abscisas,
+        z = ~alturas,
+        type = 'scatter3d',
+        mode = 'markers',
+        color = ~name,
+        size = ~point.size,
+        marker = list(sizeref = 0.5)) %>%
+      layout(
+        scene = list(
+          xaxis = list(title = ""), 
+          yaxis = list(title = ""), 
+          zaxis = list(title = "")))
+
+
+
     ## %>%
     ##   add_trace(data=current,
     ##         x = ~ordenadas,
@@ -145,20 +157,5 @@ function(input, output){
     ## if(input$sunselect){
     ##   graph <- graph + geom_point(data = sun, size=6, aes(x=abscisas, y=ordenadas), col="gold1") 
     ## }
-
-    
-    ## ## graph <- graph + 
-    ## ##   geom_path(data = orbits, size=2, aes(x=abscisas, y=ordenadas, col=name)) +
-    ## ##   scale_x_continuous(name = "x", labels = function(x){ as.character(round(x,4)) }) +
-    ## ##   scale_y_continuous(name = "y", labels = function(y){ as.character(round(y,4)) }) +
-    ## ##   scale_color_brewer(palette="Paired") +
-    ## ##   geom_point(data = current, size=4, aes(x=abscisas, y=ordenadas), col="black") +
-    ## ##   coord_cartesian(xlim = graph.axis$x, ylim = graph.axis$y) +
-    ## ##   theme(legend.text = element_text(size=14),
-    ## ##         legend.title = element_blank(),
-    ## ##         axis.text = element_text(size=14),
-    ## ##         axis.title = element_text(size=14))
-    
-    #graph
   })  
 }

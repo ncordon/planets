@@ -6,11 +6,12 @@
 ### pracma -> producto vectorial
 ### ggplot2 -> paquete para gráficas
 ### shiny -> render web
+### plotly -> paquete para gráficas 3D
 library('Bessel')
 library('pracma')
 library('ggplot2')
 library('shiny')
-
+library('plotly')
 
 shinyUI(fluidPage(
   titlePanel("Órbitas del Sistema Solar") ,
