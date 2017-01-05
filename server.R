@@ -28,7 +28,7 @@ library('shiny')
 # Datos de los planetas
 planetas <- data.frame(
   name = c("Mercurio", "Venus", "Tierra", "Marte", "Júpiter", "Saturno", "Urano", "Neptuno"),
-  period = c(87.07, 224.7, 365.26, 686.98, 4332.6, 10759, 30687, 60784),
+  period = c(87.97, 224.7, 365.26, 686.98, 4332.6, 10759, 30687, 60784),
   a = c(0.387, 0.723, 1, 1.524, 5.203, 9.546, 19.20, 30.09),
   epsilon = c(0.206, 0.007, 0.0017, 0.093, 0.048, 0.056, 0.047, 0.009))
 
