@@ -82,7 +82,7 @@ function(input, output){
     planet.data <- sel.planets()
     
     make.format <- function(...){
-      paste( format(unlist(...), digits=4), collapse=", ")
+      paste( format(unlist(...), digits=3), collapse=", ")
     }
 
     results <- lapply(planet.data, function(p){

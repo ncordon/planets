@@ -12,7 +12,9 @@ planet.info <- function(planet, t){
   t.ini <- 0
   omega <- planet$omega
   fi <- planet$fi
-
+  # Dejamos t en el intervalo [0, periodo]
+  t <- t %% period
+  
   # Calculo de matrices de rotación
   rot.fi    <- matrix( c(1, 0, 0,
                          0, cos(fi), sin(fi),

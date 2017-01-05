@@ -18,10 +18,8 @@ shinyUI(fluidPage(
 
   sidebarLayout(position = "left",
     sidebarPanel(
-      h4("Introduce un tiempo inicial para el que conocer las características orbitales \
-         de los distintos planetas del Sistema Solar en dicho instante de tiempo..."),
       checkboxGroupInput("planetselect", 
-                         label = h3("Planetas a dibujar"), 
+                         label = h4("Planetas a dibujar"), 
                          choices = list("Mercurio"="Mercurio",
                                         "Venus"="Venus",
                                         "Tierra"="Tierra",
@@ -37,17 +35,12 @@ shinyUI(fluidPage(
     
     mainPanel(
       fluidRow(
-        column(8, #plotOutput("graph", width="100%", height="100%",
-                  #           dblclick = "doubleclick",
-                  #           brush = brushOpts(
-                  #             id = "brush",
-               #             resetOnNew = TRUE )),
-               plotlyOutput("graph"),
-               style="height: 35em; width: 55em"),
+        column(8, plotlyOutput("graph", width="100%", height="100%"),
+               style="height: 30em; width: 40em"),
         column(4)
       ))),
   fluidRow(
-    column(10, tableOutput("table"))
+    column(12, tableOutput("table"), style="font-size:95%")     
   )
 ))
 
