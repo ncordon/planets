@@ -30,7 +30,6 @@ shinyUI(fluidPage(
                                         "Neptuno"="Neptuno"),
                          selected = c("Mercurio", "Venus", "Tierra", "Marte",
                                       "Júpiter", "Saturno", "Urano", "Neptuno")),
-      checkboxInput("sunselect", label = "Sol", value = TRUE),
       numericInput("timeselect", label="Introduce tiempo en días (t)", value=0) ),
     
     mainPanel(

@@ -119,14 +119,9 @@ function(input, output){
 
     orbits <- data.frame(do.call(rbind, orbits), point.size=1)
     current <- data.frame(do.call(rbind, current), point.size=2)
-    sun <- data.frame(abscisas=0, ordenadas=0, alturas=0)
-
-    datos <- rbind(orbits, current)
-
     
     # Dibuja gráfico con planetas
-    plot_ly() %>%
-      
+    graph <- plot_ly() %>%      
       add_trace(
         data = rbind(orbits, current),
         x = ~ordenadas,
@@ -143,19 +138,6 @@ function(input, output){
           yaxis = list(title = ""), 
           zaxis = list(title = "")))
 
-
-
-    ## %>%
-    ##   add_trace(data=current,
-    ##         x = ~ordenadas,
-    ##         y = ~abscisas,
-    ##         z = ~alturas,
-    ##         type = 'scatter3d',
-    ##         mode = 'markers',
-    ##         marker = list(size = 2))
-    
-    ## if(input$sunselect){
-    ##   graph <- graph + geom_point(data = sun, size=6, aes(x=abscisas, y=ordenadas), col="gold1") 
-    ## }
-  })  
+    graph
+  })
 }
