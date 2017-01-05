@@ -35,7 +35,7 @@ shinyUI(fluidPage(
     mainPanel(
       fluidRow(
         column(8, plotlyOutput("graph", width="100%", height="100%"),
-               style="height: 30em; width: 40em"),
+               style="height: 35em; width: 55em"),
         column(4)
       ))),
   fluidRow(
