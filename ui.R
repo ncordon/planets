@@ -36,17 +36,17 @@ shinyUI(fluidPage(
     
     mainPanel(
       fluidRow(
-        column(8, plotOutput("graph", width="100%", height="100%",
-                             dblclick = "doubleclick",
-                             brush = brushOpts(
-                               id = "brush",
-                               resetOnNew = TRUE
-                             )),
+        column(8, #plotOutput("graph", width="100%", height="100%",
+                  #           dblclick = "doubleclick",
+                  #           brush = brushOpts(
+                  #             id = "brush",
+               #             resetOnNew = TRUE )),
+               plotlyOutput("graph"),
                style="height: 35em; width: 55em"),
         column(4)
       ))),
   fluidRow(
-    column(8, tableOutput("table"))
+    column(10, tableOutput("table"))
   )
 ))
 
