@@ -7,15 +7,17 @@
 ### ggplot2 -> paquete para gráficas
 ### shiny -> render web
 ### plotly -> paquete para gráficas 3D
+### shinythemes -> para poder usar theme united
 library('Bessel')
 library('pracma')
 library('ggplot2')
 library('shiny')
 library('plotly')
+library('shinythemes')
 
 shinyUI(fluidPage(
+  theme = shinytheme("united"),
   titlePanel("Órbitas del Sistema Solar") ,
-
   sidebarLayout(position = "left",
     sidebarPanel(
       checkboxGroupInput("planetselect", 
