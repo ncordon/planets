@@ -19,8 +19,8 @@ planet.info <- function(planet, t){
   
   # Calculo de matrices de rotación
   rot.fi    <- matrix( c(1, 0, 0,
-                         0, cos(fi), sin(fi),
-                         0,-sin(fi), cos(fi)),
+                         0, cos(fi), -sin(fi),
+                         0, sin(fi),  cos(fi)),
                       ncol=3, byrow=T )
   rot.omega <- matrix( c(cos(omega),-sin(omega), 0,
                          sin(omega), cos(omega), 0,

@@ -19,7 +19,7 @@ shinyUI(fluidPage(
   theme = shinytheme("united"),
   titlePanel("Órbitas del Sistema Solar") ,
   sidebarLayout(position = "left",
-    sidebarPanel(
+                sidebarPanel(width = 3,
       checkboxGroupInput("planetselect", 
                          label = h4("Planetas a dibujar"), 
                          choices = list("Mercurio"="Mercurio",
@@ -36,9 +36,9 @@ shinyUI(fluidPage(
     
     mainPanel(
       fluidRow(
-        column(8, plotlyOutput("graph", width="100%", height="100%"),
+        column(10, plotlyOutput("graph", width="100%", height="100%"),
                style="height: 35em; width: 55em"),
-        column(4)
+        column(2)
       ))),
   fluidRow(
     column(12, tableOutput("table"), style="font-size:95%")     

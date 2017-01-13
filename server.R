@@ -28,16 +28,7 @@ library('plotly')
 ##########################################################################
 
 # Datos de los planetas
-planetas <- data.frame(
-  name = c("Mercurio", "Venus", "Tierra", "Marte", "Júpiter", "Saturno", "Urano", "Neptuno"),
-  period = c(87.97, 224.7, 365.26, 686.98, 4332.6, 10759, 30687, 60784),
-  a = c(0.387, 0.723, 1, 1.524, 5.203, 9.546, 19.20, 30.09),
-  epsilon = c(0.206, 0.007, 0.0017, 0.093, 0.048, 0.056, 0.047, 0.009),
-  fi = pi/180 * c(7, 3.59, 0, 1.85, 1.31, 2.5, 0.77, 1.78),
-  omega = pi/180 * c(75.9, 130.15, 101.22, 334.22, 12.72, 91.09, 169.05, 43.83),
-  upper.omega = pi/180 * c(47.14, 75.78, 0, 48.78, 99.44, 112.79, 73.48, 130.68)
-)
-
+source(file = "./data.R", local=T)
 
 ##########################################################################
 # Carga de archivos auxiliares
@@ -58,7 +49,7 @@ function(input, output){
     selected <- input$planetselect
     # Comprueba que la entrada es no vacía
     req(selected)
-    sel.planets <- planetas[ planetas$name %in% selected, ]
+    sel.planets <- planets[ planets$name %in% selected, ]
     planet.data <- lapply(1:nrow(sel.planets), function(i){
       planet.info( sel.planets[i,], sel.time() )
     }) 
@@ -117,9 +108,9 @@ function(input, output){
                  alturas = p$posicion.nr[3])
     })
 
-    orbits <- data.frame(do.call(rbind, orbits), point.size=0.5)
+    orbits <- data.frame(do.call(rbind, orbits), point.size=1)
     current <- data.frame(do.call(rbind, current), point.size=2)
-    #sun <- data.frame(name=abscisas=0, ordenadas=0, alturas=0)
+    sun <- data.frame(name="Sol", abscisas=0, ordenadas=0, alturas=0)
 
     # Dibuja gráfico con planetas
     graph <- plot_ly() %>%      
@@ -131,15 +122,23 @@ function(input, output){
         type = 'scatter3d',
         mode = 'markers',
         color = ~name,
+        colors = "Set1",
         size = ~point.size,
-        projection = list(y = list(show=F)),
-        marker = list(sizeref = 0.5, opacity=1)) %>%
+        marker = list(opacity=1)) %>%
+      add_trace(
+        data = sun,
+        x = ~ordenadas,
+        y = ~abscisas,
+        z = ~alturas,
+        type = 'scatter3d',
+        mode = 'markers',
+        color = ~name,
+        marker = list(color="gold", opacity=1)) %>%  
       layout(
         scene = list(
           xaxis = list(title = ""), 
           yaxis = list(title = ""), 
           zaxis = list(title = "", range= list(-30,30))))
-
     graph
   })
 }
