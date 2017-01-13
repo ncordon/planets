@@ -1,7 +1,7 @@
 ##########################################################################
 # Fucnión de cálculo de datos característicos de planeta:
 #     Posición, distancia al sol, momento angular, area de órbita, energía
-##########################################################################
+##########################################################################p
 
 planet.info <- function(planet, t){
   name <- planet$name
@@ -10,8 +10,10 @@ planet.info <- function(planet, t){
   period <- planet$period
   mu <- 4*pi^2/period^2 * a^3
   t.ini <- 0
-  omega <- planet$omega
+  upper.omega <- planet$upper.omega
+  omega <- planet$omega - upper.omega
   fi <- planet$fi
+  
   # Dejamos t en el intervalo [0, periodo]
   t <- t %% period
   
@@ -24,8 +26,12 @@ planet.info <- function(planet, t){
                          sin(omega), cos(omega), 0,
                          0, 0, 1),
                       ncol=3, byrow=T )
+  rot.upper.omega <- matrix( c(cos(upper.omega), -sin(upper.omega), 0,
+                               sin(upper.omega),  cos(upper.omega), 0,
+                               0, 0, 1),
+                            ncol=3, byrow=T )
 
-  rotate <- function(u){ rot.omega %*% rot.fi %*% u }
+  rotate <- function(x){ rot.upper.omega %*% rot.fi %*% rot.omega %*% x }
 
   # Aproximamos una solución de la ecuación implícita, tanto por Newton-Raphson, como por Bessel
   posicion <- function(u){

@@ -35,7 +35,7 @@ planetas <- data.frame(
   epsilon = c(0.206, 0.007, 0.0017, 0.093, 0.048, 0.056, 0.047, 0.009),
   fi = pi/180 * c(7, 3.59, 0, 1.85, 1.31, 2.5, 0.77, 1.78),
   omega = pi/180 * c(75.9, 130.15, 101.22, 334.22, 12.72, 91.09, 169.05, 43.83),
-  perihelio = pi/180 * c(47.14, 75.78, 0, 48.78, 99.44, 112.79, 73.48, 130.68)
+  upper.omega = pi/180 * c(47.14, 75.78, 0, 48.78, 99.44, 112.79, 73.48, 130.68)
 )
 
 
@@ -117,9 +117,10 @@ function(input, output){
                  alturas = p$posicion.nr[3])
     })
 
-    orbits <- data.frame(do.call(rbind, orbits), point.size=1)
+    orbits <- data.frame(do.call(rbind, orbits), point.size=0.5)
     current <- data.frame(do.call(rbind, current), point.size=2)
-    
+    #sun <- data.frame(name=abscisas=0, ordenadas=0, alturas=0)
+
     # Dibuja gráfico con planetas
     graph <- plot_ly() %>%      
       add_trace(
@@ -131,12 +132,13 @@ function(input, output){
         mode = 'markers',
         color = ~name,
         size = ~point.size,
-        marker = list(sizeref = 0.5)) %>%
+        projection = list(y = list(show=F)),
+        marker = list(sizeref = 0.5, opacity=1)) %>%
       layout(
         scene = list(
           xaxis = list(title = ""), 
           yaxis = list(title = ""), 
-          zaxis = list(title = "")))
+          zaxis = list(title = "", range= list(-30,30))))
 
     graph
   })
