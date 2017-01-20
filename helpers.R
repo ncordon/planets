@@ -1,5 +1,5 @@
 ##########################################################################
-# Fucnión de cálculo de datos característicos de planeta:
+# Función de cálculo de datos característicos de planeta:
 #     Posición, distancia al sol, momento angular, area de órbita, energía
 ##########################################################################p
 
