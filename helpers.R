@@ -1,7 +1,7 @@
 ##########################################################################
 # Función de cálculo de datos característicos de planeta:
 #     Posición, distancia al sol, momento angular, area de órbita, energía
-##########################################################################p
+##########################################################################
 
 planet.info <- function(planet, t){
   name <- planet$name
